@@ -5,6 +5,7 @@
 function showOverlay() {
   // Create overlay elements
   const overlay = document.createElement('div');
+  overlay.className = 'snooze-overlay';
   overlay.style.cssText = `
     position: fixed;
     top: 0;
