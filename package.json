@@ -1,0 +1,35 @@
+{
+  "name": "snoozecorp",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Installing this extension will block all websites that Rupert Murdoch controls.",
+  "main": "src/content.js",
+  "scripts": {
+    "build": "webpack --mode=production",
+    "build:chrome": "webpack --mode=production --env browser=chrome",
+    "build:firefox": "webpack --mode=production --env browser=firefox",
+    "dev": "webpack --mode=development --watch",
+    "clean": "rimraf dist",
+    "test": "echo \"No tests specified\"",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix"
+  },
+  "keywords": ["browser-extension", "webextension", "blocker"],
+  "author": "@matcarpenter",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.25.0",
+    "@babel/preset-env": "^7.25.0",
+    "@eslint/js": "^9.37.0",
+    "babel-loader": "^10.0.0",
+    "copy-webpack-plugin": "^13.0.1",
+    "eslint": "^9.37.0",
+    "globals": "^16.4.0",
+    "rimraf": "^6.0.1",
+    "webpack": "^5.95.0",
+    "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "webextension-polyfill": "^0.12.0"
+  }
+}

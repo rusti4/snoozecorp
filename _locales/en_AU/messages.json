@@ -1,0 +1,10 @@
+{
+  "name": {
+    "message": "SnoozeCorp",
+    "description": "Extension name"
+  },
+  "description": {
+    "message": "Block websites owned by News Corp and its subsidiaries, including Fox News, Wall Street Journal, and other Murdoch-controlled media outlets.",
+    "description": "Extension description"
+  }
+}
