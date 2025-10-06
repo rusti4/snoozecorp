@@ -36,11 +36,16 @@ including Fox News, Wall Street Journal, and other Murdoch-controlled media outl
 - `npm install`
 - `npm run dev` for development build with watch
 - `npm run build` for production build
-- `npm test` to run tests (currently no tests)
+- `npm test` to run E2E tests with Playwright
 - `npm run lint` to check code quality
 - `npm run lint:fix` to auto-fix linting issues
 
-## Scripts
+## Testing
+
+- `npm test` - Run E2E tests with Playwright
+- `npm run test:ui` - Run tests with Playwright UI mode
+
+The tests verify basic functionality and can be extended for full extension testing.
 
 - `npm run build:chrome` - Build for Chrome
 - `npm run build:firefox` - Build for Firefox (adds Firefox-specific manifest settings)
