@@ -1,14 +1,17 @@
 # SnoozeCorp
 
-A browser extension that blocks websites owned by News Corp and its subsidiaries, including Fox News, Wall Street Journal, and other Murdoch-controlled media outlets.
+A browser extension that blocks websites owned by News Corp and its subsidiaries,
+including Fox News, Wall Street Journal, and other Murdoch-controlled media outlets.
 
 ## Installation
 
 ### Chrome
+
 1. Run `npm run build:chrome`
 2. Load the `dist/chrome` folder as an unpacked extension in Chrome.
 
 ### Firefox
+
 1. Run `npm run build:firefox`
 2. Load the `dist/firefox` folder as a temporary add-on in Firefox.
 
@@ -43,6 +46,7 @@ A browser extension that blocks websites owned by News Corp and its subsidiaries
 This extension uses Crowdin for translation management.
 
 ### Setup
+
 1. Create a project on [Crowdin](https://crowdin.com).
 2. Get your Project ID from the API section in Crowdin.
 3. Generate a Personal Access Token in your Crowdin account settings.

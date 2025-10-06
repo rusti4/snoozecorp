@@ -12,9 +12,17 @@
     "clean": "rimraf dist",
     "test": "echo \"No tests specified\"",
     "lint": "eslint src/",
-    "lint:fix": "eslint src/ --fix"
+    "lint:fix": "eslint src/ --fix",
+    "lint:json": "jsonlint package.json manifest.json _locales/en_AU/messages.json",
+    "lint:yaml": "yamllint crowdin.yml .github/workflows/crowdin.yml",
+    "lint:md": "markdownlint README.md",
+    "lint:all": "npm run lint && npm run lint:json && npm run lint:yaml && npm run lint:md"
   },
-  "keywords": ["browser-extension", "webextension", "blocker"],
+  "keywords": [
+    "browser-extension",
+    "webextension",
+    "blocker"
+  ],
   "author": "@matcarpenter",
   "license": "MIT",
   "devDependencies": {
@@ -25,9 +33,12 @@
     "copy-webpack-plugin": "^13.0.1",
     "eslint": "^9.37.0",
     "globals": "^16.4.0",
+    "jsonlint": "^1.6.3",
+    "markdownlint-cli": "^0.45.0",
     "rimraf": "^6.0.1",
     "webpack": "^5.95.0",
-    "webpack-cli": "^6.0.1"
+    "webpack-cli": "^6.0.1",
+    "yaml-lint": "^1.7.0"
   },
   "dependencies": {
     "webextension-polyfill": "^0.12.0"
