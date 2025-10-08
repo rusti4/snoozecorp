@@ -1,0 +1,40 @@
+name: Domain Submission
+description: Submit a domain for News Corp blocking consideration
+title: "[DOMAIN] example.com"
+labels: ["domain-submission"]
+body:
+  - type: input
+    id: domain
+    attributes:
+      label: Domain Name
+      description: The domain you want to submit (e.g., example.com)
+      placeholder: example.com
+    validations:
+      required: true
+  - type: textarea
+    id: reason
+    attributes:
+      label: Why is this News Corp owned?
+      description: Provide evidence or explanation (links to articles, company announcements, etc.)
+      placeholder: "Link to article: https://example.com/article\nCompany announcement: https://newscorp.com/press-release"
+    validations:
+      required: true
+  - type: dropdown
+    id: confidence
+    attributes:
+      label: Confidence Level
+      description: How sure are you this is News Corp owned?
+      options:
+        - High - Direct evidence from News Corp
+        - Medium - Strong indication (acquisition announced)
+        - Low - Speculation or indirect connection
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Submission Terms
+      description: By submitting this domain, you agree that it will be reviewed by the extension maintainer.
+      options:
+        - label: I understand this submission will be reviewed before being added to the block list
+          required: true

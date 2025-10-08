@@ -78,6 +78,7 @@ const domainList = document.getElementById('domain-list');
 const submitForm = document.getElementById('submit-form');
 const domainInput = document.getElementById('domain-input');
 const messageDiv = document.getElementById('message');
+const submitPublicBtn = document.getElementById('submit-public');
 
 // Function to validate URL/domain
 function validateDomain(domain) {
@@ -223,6 +224,43 @@ submitForm.addEventListener('submit', async (e) => {
   } catch {
     showMessage('Error submitting domain', 'error');
   }
+});
+
+// Handle public submission (opens GitHub Issue)
+submitPublicBtn.addEventListener('click', () => {
+  const domain = domainInput.value.trim();
+
+  const validation = validateDomain(domain);
+  if (!validation.valid) {
+    showMessage(validation.error, 'error');
+    return;
+  }
+
+  // Create GitHub Issue URL with pre-filled data
+  const issueTitle = encodeURIComponent(`[DOMAIN] ${validation.domain}`);
+  const issueBody = encodeURIComponent(`**Domain:** ${validation.domain}
+
+**Why is this News Corp owned?**
+[Please provide evidence or explanation here]
+
+**Confidence Level:**
+- High - Direct evidence from News Corp
+- Medium - Strong indication (acquisition announced)
+- Low - Speculation or indirect connection
+
+---
+*Submitted via SnoozeCorp browser extension*`);
+
+  const githubUrl = `https://github.com/rusti4/snoozecorp/issues/new?title=${issueTitle}&body=${issueBody}&labels=domain-submission`;
+
+  // Open GitHub Issue in new tab
+  browser.tabs.create({ url: githubUrl });
+
+  // Clear input
+  domainInput.value = '';
+
+  // Show success message
+  showMessage('GitHub Issue opened! Please complete the submission.', 'success');
 });
 
 // Function to populate input with current tab's domain

@@ -213,6 +213,37 @@
     .ai-section button:hover {
       background: #e68900;
     }
+    .load-btn {
+      padding: 10px 15px;
+      background: #6f42c1;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: background 0.3s;
+    }
+    .load-btn:hover {
+      background: #5a32a3;
+    }
+    .load-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .view-btn {
+      padding: 8px 12px;
+      background: #0366d6;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 8px;
+      font-size: 0.9em;
+      transition: background 0.3s;
+    }
+    .view-btn:hover {
+      background: #0256cc;
+    }
     .ai-result {
       margin-top: 10px;
       padding: 10px;
@@ -285,6 +316,15 @@
           <!-- Stats will be populated here -->
         </div>
       </div>
+
+      <div class="section">
+        <h2>🐙 GitHub Issues</h2>
+        <p>Public domain submissions from GitHub Issues:</p>
+        <button id="load-issues" class="load-btn">Load GitHub Issues</button>
+        <div id="github-issues" class="domain-list">
+          <!-- GitHub Issues will be populated here -->
+        </div>
+      </div>
     </div>
   </div>
 
@@ -308,6 +348,8 @@
     const aiResult = document.getElementById('ai-result');
     const userDomainsDiv = document.getElementById('user-domains');
     const statsDiv = document.getElementById('stats');
+    const loadIssuesBtn = document.getElementById('load-issues');
+    const githubIssuesDiv = document.getElementById('github-issues');
 
     // Check if SnoozeCorp extension is installed
     let extensionConnected = false;
@@ -603,7 +645,107 @@
       }
     }
 
-    // Show message
+    // Load GitHub Issues
+    async function loadGitHubIssues() {
+      try {
+        loadIssuesBtn.disabled = true;
+        loadIssuesBtn.textContent = 'Loading...';
+        githubIssuesDiv.innerHTML = '<p>Loading GitHub Issues...</p>';
+
+        // Fetch GitHub Issues from the repository
+        const response = await fetch('https://api.github.com/repos/rusti4/snoozecorp/issues?labels=domain-submission&state=open');
+        
+        if (!response.ok) {
+          throw new Error(`GitHub API error: ${response.status}`);
+        }
+
+        const issues = await response.json();
+
+        if (issues.length === 0) {
+          githubIssuesDiv.innerHTML = '<p>✅ No pending domain submission issues.</p>';
+          return;
+        }
+
+        githubIssuesDiv.innerHTML = '';
+
+        issues.forEach(issue => {
+          const div = document.createElement('div');
+          div.className = 'domain-item';
+
+          // Extract domain from title (format: "[DOMAIN] example.com")
+          const domainMatch = issue.title.match(/\[DOMAIN\]\s*(.+)/i);
+          const domain = domainMatch ? domainMatch[1] : 'Unknown';
+
+          const domainText = document.createElement('span');
+          domainText.innerHTML = `<strong>${domain}</strong><br><small>Issue #${issue.number} - ${new Date(issue.created_at).toLocaleDateString()}</small>`;
+
+          const actions = document.createElement('div');
+
+          const viewBtn = document.createElement('button');
+          viewBtn.textContent = '👁️ View Issue';
+          viewBtn.className = 'view-btn';
+          viewBtn.onclick = () => window.open(issue.html_url, '_blank');
+
+          const approveBtn = document.createElement('button');
+          approveBtn.textContent = '✓ Add to Blocklist';
+          approveBtn.className = 'approve-btn';
+          approveBtn.onclick = () => addDomainFromIssue(domain, issue.number);
+
+          actions.appendChild(viewBtn);
+          actions.appendChild(approveBtn);
+
+          div.appendChild(domainText);
+          div.appendChild(actions);
+
+          githubIssuesDiv.appendChild(div);
+        });
+
+      } catch (error) {
+        console.error('Error loading GitHub Issues:', error);
+        githubIssuesDiv.innerHTML = '<p>❌ Error loading GitHub Issues. Check console for details.</p>';
+      } finally {
+        loadIssuesBtn.disabled = false;
+        loadIssuesBtn.textContent = 'Load GitHub Issues';
+      }
+    }
+
+    // Add domain from GitHub Issue to blocklist
+    async function addDomainFromIssue(domain, issueNumber) {
+      if (!extensionConnected) {
+        showMessage('Extension not connected', 'error');
+        return;
+      }
+
+      try {
+        // Get current hardcoded domains
+        const response = await sendMessage({ action: 'getHardcodedDomains' });
+        const currentDomains = response.domains || [];
+
+        // Check if already in list
+        if (currentDomains.includes(domain)) {
+          showMessage(`Domain ${domain} is already in the blocklist`, 'error');
+          return;
+        }
+
+        // Add to list
+        currentDomains.push(domain);
+        
+        // Save back to extension
+        await sendMessage({ action: 'setHardcodedDomains', domains: currentDomains });
+
+        // Update textarea
+        hardcodedDomainsTextarea.value = currentDomains.join('\n');
+
+        showMessage(`✅ Added ${domain} to blocklist from Issue #${issueNumber}`, 'success');
+
+      } catch (error) {
+        console.error('Error adding domain:', error);
+        showMessage('Error adding domain to blocklist', 'error');
+      }
+    }
+
+    // Event listeners
+    loadIssuesBtn.addEventListener('click', loadGitHubIssues);
     function showMessage(text, type) {
       // Clear existing messages
       document.querySelectorAll('.message').forEach(el => el.remove());
