@@ -1,11 +1,13 @@
 # SnoozeCorp
 
-A privacy-first browser extension that blocks websites owned by News Corp and its subsidiaries,
-including Fox News, Wall Street Journal, and other Murdoch-controlled media outlets.
+A privacy-first browser extension that blocks websites owned by News Corp
+and its subsidiaries, including Fox News, Wall Street Journal, and other
+Murdoch-controlled media outlets.
 
 ## Features
 
-- **Privacy-Focused**: Only checks the current tab URL, no browsing history collection or external data transmission
+- **Privacy-Focused**: Only checks the current tab URL, no browsing history
+  collection or external data transmission
 - **Cross-Browser**: Compatible with Chrome and Firefox using Manifest V3 and webextension-polyfill
 - **User Submissions**: Secure UI for submitting additional domains for review
 - **Local Storage**: User-submitted domains stored locally pending manual review
@@ -26,10 +28,44 @@ including Fox News, Wall Street Journal, and other Murdoch-controlled media outl
 
 ## Usage
 
-- The extension automatically checks the current tab URL against known News Corp domains
+- The extension automatically checks the current tab URL against known News
+  Corp domains
 - A red badge (🚫) appears on the extension icon when visiting a blocked site
 - Click the extension icon to view blocked domains and submit new ones for review
-- Access options page for detailed information about blocked and pending domains
+- Access options page for detailed information about blocked and pending
+  domains
+
+## Admin Panel
+
+The SnoozeCorp extension includes a standalone admin panel for managing blocked domains.
+This panel is hosted separately on GitHub Pages for easier access and management.
+
+### Setting up the Admin Panel
+
+1. **Create a GitHub Repository**: Create a new public repository named `snoozecorp-admin`
+   (or similar)
+2. **Upload Admin Files**: Copy the `admin.html` file from your built extension
+   (`dist/admin.html`) to the repository
+3. **Enable GitHub Pages**:
+   - Go to repository Settings → Pages
+   - Select "Deploy from a branch"
+   - Choose `main` branch and `/ (root)` folder
+   - Save changes
+4. **Access the Panel**: The admin panel will be available at `https://yourusername.github.io/snoozecorp-admin/`
+
+### Admin Panel Features
+
+- **Password Protection**: Secure access with configurable password
+- **Domain Management**: View, approve, and reject user-submitted domains
+- **Statistics**: Monitor blocking activity and domain counts
+- **AI Validation**: Automatic domain validation using AI-powered analysis
+- **Real-time Updates**: Changes sync immediately with the extension
+
+### Admin Panel Requirements
+
+- The SnoozeCorp extension must be installed in your browser
+- The admin panel communicates with the extension via browser messaging
+- Password protection is client-side only (for convenience, not security)
 
 ## Development
 

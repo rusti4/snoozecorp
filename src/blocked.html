@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Site Blocked</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #111;
+      color: white;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      max-width: 600px;
+      background-color: #222;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border: 3px solid #ff4444;
+      text-align: center;
+    }
+    .icon {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 20px;
+      display: block;
+      background-image: url('assets/icons/hand-icon.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    h1 {
+      font-size: 3em;
+      margin-bottom: 20px;
+      color: #ff4444;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    p {
+      font-size: 1.3em;
+      margin-bottom: 25px;
+      line-height: 1.4;
+    }
+    .description {
+      font-size: 1em;
+      opacity: 0.9;
+      margin-bottom: 35px;
+    }
+    .buttons {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      min-width: 130px;
+      background: #333;
+      color: white;
+      border: 2px solid #555;
+    }
+    .btn:hover {
+      background: #444;
+      transform: translateY(-2px);
+    }
+    .btn-primary {
+      background: #ff4444;
+      border-color: #ff4444;
+    }
+    .btn-primary:hover {
+      background: #cc3333;
+    }
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #444;
+      font-size: 0.8rem;
+      color: #aaa;
+    }
+    .footer a {
+      color: #ff4444;
+      text-decoration: none;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+    }
+    .attribution {
+      margin-top: 15px;
+      font-size: 0.75rem;
+      color: #777;
+    }
+    @media (max-width: 480px) {
+      .container {
+        padding: 30px 20px;
+      }
+      h1 {
+        font-size: 2.5rem;
+      }
+      .buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+      .btn {
+        width: 100%;
+        max-width: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon"></div>
+    <h1>Site Blocked</h1>
+    <p><strong id="blockedDomain">Loading...</strong> is owned by News Corp (Rupert Murdoch) and has been blocked by SnoozeCorp.</p>
+    <p class="description">This extension helps you avoid supporting Murdoch-owned media companies.</p>
+    <div class="buttons">
+      <button class="btn btn-secondary" id="goBackBtn">← Go Back</button>
+      <button class="btn btn-primary" id="searchBtn">Search Instead →</button>
+    </div>
+    <div class="footer">
+      <strong>SnoozeCorp</strong> - Take back control of your media consumption
+      <div class="attribution">
+        <a href="https://www.flaticon.com/free-icons/block" title="block icons">Block icons created by lalawidi - Flaticon</a>
+      </div>
+    </div>
+  </div>
+  <script src="blocked.js"></script>
+</body>
+</html>

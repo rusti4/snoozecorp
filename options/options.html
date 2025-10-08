@@ -3,60 +3,204 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SnoozeCorp Options</title>
+  <title>SnoozeCorp Admin</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
-      max-width: 600px;
+      max-width: 800px;
       margin: 0 auto;
+      background-color: #f5f5f5;
     }
     h1 {
       color: #333;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .login-section {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .admin-section {
+      display: none;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
     .section {
       margin-bottom: 20px;
       padding: 15px;
       border: 1px solid #ddd;
       border-radius: 5px;
+      background: #fafafa;
     }
-    .user-domains {
+    .section h2 {
+      margin-top: 0;
+      color: #444;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 5px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input[type="text"], input[type="password"], textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    textarea {
+      height: 100px;
+      resize: vertical;
+    }
+    button {
+      padding: 10px 15px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    button.danger {
+      background-color: #dc3545;
+    }
+    button.danger:hover {
+      background-color: #c82333;
+    }
+    button.success {
+      background-color: #28a745;
+    }
+    button.success:hover {
+      background-color: #218838;
+    }
+    .domain-list {
       max-height: 200px;
       overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 10px;
+      background: white;
+      border-radius: 4px;
     }
     .domain-item {
-      padding: 5px 0;
+      padding: 8px;
       border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    .pending {
-      color: #ffa500;
+    .domain-item:last-child {
+      border-bottom: none;
+    }
+    .domain-actions {
+      display: flex;
+      gap: 5px;
+    }
+    .status {
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 0.8em;
+      font-weight: bold;
+    }
+    .status.pending {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+    .status.approved {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .status.rejected {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    .ai-result {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 4px;
+      background-color: #e9ecef;
+    }
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .hidden {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <h1>🚫 SnoozeCorp Options</h1>
+  <h1>� SnoozeCorp Admin Panel</h1>
 
-  <div class="section">
-    <h2>About</h2>
-    <p>This extension blocks websites owned by News Corp and its subsidiaries.</p>
-    <p>Privacy-focused: Only checks the current tab URL, stores submissions locally.</p>
+  <div id="login-section" class="login-section">
+    <h2>Administrator Login</h2>
+    <div class="form-group">
+      <label for="password">Password:</label>
+      <input type="password" id="password" placeholder="Enter admin password">
+    </div>
+    <button id="login-btn">Login</button>
+    <div id="login-message"></div>
   </div>
 
-  <div class="section">
-    <h2>Blocked Domains</h2>
-    <p>The following domains are blocked:</p>
-    <div id="blocked-domains">
-      <!-- Will be populated by script -->
+  <div id="admin-section" class="admin-section">
+    <div class="section">
+      <h2>📋 Hardcoded Domain List</h2>
+      <p>Current blocked domains (one per line):</p>
+      <textarea id="hardcoded-domains" placeholder="Enter domains, one per line"></textarea>
+      <br><br>
+      <button id="save-hardcoded">Save Changes</button>
+      <button id="add-domain">Add Domain</button>
+      <div id="hardcoded-message"></div>
+    </div>
+
+    <div class="section">
+      <h2>🤖 AI Domain Validation</h2>
+      <div class="form-group">
+        <label for="ai-domain">Domain to validate:</label>
+        <input type="text" id="ai-domain" placeholder="e.g., example.com">
+      </div>
+      <button id="validate-ai">Validate with AI</button>
+      <div id="ai-result" class="ai-result hidden"></div>
+    </div>
+
+    <div class="section">
+      <h2>👥 User-Submitted Domains</h2>
+      <div id="user-domains" class="domain-list">
+        <!-- User submissions will be populated here -->
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📊 Statistics</h2>
+      <div id="stats">
+        <!-- Stats will be populated here -->
+      </div>
     </div>
   </div>
 
-  <div class="section">
-    <h2>User-Submitted Domains (Pending Review)</h2>
-    <div id="user-domains" class="user-domains">
-      <!-- Will be populated by script -->
-    </div>
-  </div>
-
+  <script src="../node_modules/webextension-polyfill/dist/browser-polyfill.js"></script>
   <script src="options.js"></script>
 </body>
 </html>

@@ -4,17 +4,52 @@
   "name": "__MSG_name__",
   "version": "1.0.0",
   "description": "__MSG_description__",
-  "author": "@matcarpenter",
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "snoozecorp@rusti4.github.io",
-      "strict_min_version": "109.0"
-    }
-  },
+  "author": "RussellTaylor",
   "permissions": [
     "activeTab",
     "storage",
-    "scripting"
+    "scripting",
+    "declarativeNetRequest",
+    "tabs"
+  ],
+  "host_permissions": [
+    "*://*.foxnews.com/*",
+    "*://*.news.com.au/*",
+    "*://*.theaustralian.com.au/*",
+    "*://*.dailytelegraph.com.au/*",
+    "*://*.heraldsun.com.au/*",
+    "*://*.couriermail.com.au/*",
+    "*://*.adelaidenow.com.au/*",
+    "*://*.perthnow.com.au/*",
+    "*://*.ntnews.com.au/*",
+    "*://*.themercury.com.au/*",
+    "*://*.townsvillebulletin.com.au/*",
+    "*://*.cairnspost.com.au/*",
+    "*://*.goldcoastbulletin.com.au/*",
+    "*://*.geelongadvertiser.com.au/*",
+    "*://*.weeklytimesnow.com.au/*",
+    "*://*.whereilive.com.au/*",
+    "*://*.foxsports.com.au/*",
+    "*://*.businessspectator.com.au/*",
+    "*://*.eurekareport.com.au/*",
+    "*://*.vogue.com.au/*",
+    "*://*.taste.com.au/*",
+    "*://*.kidspot.com.au/*",
+    "*://*.bodyandsoul.com.au/*",
+    "*://*.homelife.com.au/*",
+    "*://*.newscorp.com/*",
+    "*://*.dowjones.com/*",
+    "*://*.nypost.com/*",
+    "*://*.harpercollins.com/*",
+    "*://*.newsamerica.com/*",
+    "*://*.smartsource.com/*",
+    "*://*.storyful.com/*",
+    "*://*.foxbusiness.com/*",
+    "*://*.foxsports.com/*",
+    "*://*.thetimes.co.uk/*",
+    "*://*.thesundaytimes.co.uk/*",
+    "*://*.thesun.co.uk/*",
+    "*://*.news.co.uk/*"
   ],
   "background": {
     "service_worker": "src/background.js"
@@ -29,10 +64,18 @@
     },
     "default_title": "__MSG_name__"
   },
-  "options_ui": {
-    "page": "options/options.html",
-    "open_in_tab": true
+  "declarative_net_request": {
+    "rule_resources": [{
+      "id": "news_corp_blocker",
+      "enabled": true,
+      "path": "rules.json"
+    }]
   },
+  "web_accessible_resources": [{
+    "resources": ["blocked.html"],
+    "matches": ["<all_urls>"]
+  }],
+  "options_page": "options/options.html",
   "icons": {
     "16": "assets/icons/icon16.png",
     "32": "assets/icons/icon32.png",

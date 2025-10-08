@@ -1,11 +1,15 @@
 // SnoozeCorp Background Script
 // Handles tab monitoring, domain checking, and badge updates
 
+console.log('🚀 SnoozeCorp background script STARTING...');
+
 // Import browser API polyfill for cross-browser compatibility
 import browser from 'webextension-polyfill';
 
-// Known News Corp domains (hardcoded list)
-const NEWS_CORP_DOMAINS = [
+console.log('📦 Polyfill loaded, continuing...');
+
+// Known News Corp domains (loaded from storage, with defaults)
+let NEWS_CORP_DOMAINS = [
   'bestrecipes.com.au',
   'hipages.com.au',
   'odds.com.au',
@@ -73,58 +77,57 @@ const NEWS_CORP_DOMAINS = [
   'realestate.com.au'
 ];
 
+// Load hardcoded domains from storage
+async function loadHardcodedDomains() {
+  try {
+    const result = await browser.storage.local.get('hardcodedDomains');
+    if (result.hardcodedDomains && result.hardcodedDomains.length > 0) {
+      NEWS_CORP_DOMAINS = result.hardcodedDomains;
+    }
+  } catch (error) {
+    console.error('Error loading hardcoded domains:', error);
+  }
+}
+
 // User-submitted domains (loaded from storage)
 let userSubmittedDomains = [];
 
 // Function to check if a URL matches News Corp domains
 function isNewsCorpDomain(url) {
-  const hostname = new URL(url).hostname.toLowerCase();
-  // Check against hardcoded list
-  if (NEWS_CORP_DOMAINS.some(domain => hostname === domain || hostname.endsWith('.' + domain))) {
-    return true;
+  try {
+    const hostname = new URL(url).hostname.toLowerCase();
+    console.log('🔍 CHECKING DOMAIN:', hostname, 'from URL:', url);
+
+    // Check against hardcoded list
+    const isHardcoded = NEWS_CORP_DOMAINS.some(domain => hostname === domain || hostname.endsWith('.' + domain));
+    console.log('🔍 HARDCODED MATCH:', isHardcoded);
+
+    if (isHardcoded) {
+      return true;
+    }
+
+    // Check against user-submitted domains
+    const isUserSubmitted = userSubmittedDomains.some(domain => hostname === domain || hostname.endsWith('.' + domain));
+    console.log('Is user submitted match:', isUserSubmitted);
+
+    return isUserSubmitted;
+  } catch (error) {
+    console.error('Error parsing URL:', url, error);
+    return false;
   }
-  // Check against user-submitted domains
-  if (userSubmittedDomains.some(domain => hostname === domain || hostname.endsWith('.' + domain))) {
-    return true;
-  }
-  return false;
 }
 
 // Function to update badge for a tab
 async function updateBadge(tabId, isBlocked) {
   try {
     if (isBlocked) {
-      await browser.action.setBadgeText({ tabId, text: '🚫' });
+      await browser.action.setBadgeText({ tabId, text: '🛑' });
       await browser.action.setBadgeBackgroundColor({ tabId, color: '#ff0000' });
     } else {
       await browser.action.setBadgeText({ tabId, text: '' });
     }
   } catch (error) {
     console.error('Error updating badge:', error);
-  }
-}
-
-// Function to inject content script if not already injected
-async function injectContentScript(tabId) {
-  try {
-    // Check if already injected (simple check, may not be perfect)
-    const results = await browser.scripting.executeScript({
-      target: { tabId },
-      func: () => typeof window.snoozeCorpInjected !== 'undefined'
-    });
-    if (!results || !results[0] || !results[0].result) {
-      await browser.scripting.executeScript({
-        target: { tabId },
-        files: ['src/content.js']
-      });
-      // Mark as injected
-      await browser.scripting.executeScript({
-        target: { tabId },
-        func: () => { window.snoozeCorpInjected = true; }
-      });
-    }
-  } catch (error) {
-    console.error('Error injecting content script:', error);
   }
 }
 
@@ -138,37 +141,165 @@ async function loadUserSubmissions() {
   }
 }
 
-// Listen for tab updates
+// Listen for tab updates to block News Corp sites
 browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  // Block News Corp sites before they load
+  if (changeInfo.status === 'loading' && tab.url && tab.url !== browser.runtime.getURL('blocked.html')) {
+    try {
+      const url = new URL(tab.url);
+      if (isNewsCorpDomain(tab.url)) {
+        console.log('🚫 Blocking News Corp site:', url.hostname);
+        const blockedUrl = browser.runtime.getURL(`blocked.html?domain=${encodeURIComponent(url.hostname)}`);
+        await browser.tabs.update(tabId, { url: blockedUrl });
+        return;
+      }
+    } catch {
+      // Invalid URL, ignore
+    }
+  }
+  
+  // Update badge when page is complete
   if (changeInfo.status === 'complete' && tab.url) {
     const isBlocked = isNewsCorpDomain(tab.url);
+    console.log('Tab update:', tab.url, 'isBlocked:', isBlocked);
     await updateBadge(tabId, isBlocked);
-    if (isBlocked) {
-      await injectContentScript(tabId);
-    }
   }
 });
 
 // Initialize on startup
 browser.runtime.onStartup.addListener(async () => {
+  console.log('SnoozeCorp: onStartup triggered');
+  await loadHardcodedDomains();
   await loadUserSubmissions();
 });
 
 // Initialize on install
 browser.runtime.onInstalled.addListener(async () => {
+  console.log('SnoozeCorp: onInstalled triggered');
+  await loadHardcodedDomains();
   await loadUserSubmissions();
 });
 
-// Listen for storage changes to reload user submissions
+// Listen for storage changes to reload domains
 browser.storage.onChanged.addListener(async (changes) => {
   if (changes.userSubmittedDomains) {
     userSubmittedDomains = changes.userSubmittedDomains.newValue || [];
   }
+  if (changes.hardcodedDomains || changes.approvedDomains) {
+    // Reload domains and update DNR rules
+    await loadHardcodedDomains();
+  }
 });
 
-// Listen for messages from popup
-browser.runtime.onMessage.addListener(async (message) => {
-  if (message.action === 'reloadUserDomains') {
-    await loadUserSubmissions();
+// Listen for messages from popup and options
+browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+  console.log('📨 Received message:', message);
+
+  try {
+    switch (message.action) {
+      case 'ping': {
+        sendResponse({ success: true, version: '1.0.0' });
+        break;
+      }
+
+      case 'getHardcodedDomains': {
+        const hardcodedResult = await browser.storage.local.get('hardcodedDomains');
+        const hardcodedDomains = hardcodedResult.hardcodedDomains || NEWS_CORP_DOMAINS;
+        sendResponse({ domains: hardcodedDomains });
+        break;
+      }
+
+      case 'setHardcodedDomains': {
+        await browser.storage.local.set({ hardcodedDomains: message.domains });
+        NEWS_CORP_DOMAINS = message.domains;
+        // Note: updateBlockingRules removed - using programmatic blocking now
+        sendResponse({ success: true });
+        break;
+      }
+
+      case 'getUserDomains': {
+        const userResult = await browser.storage.local.get(['userSubmittedDomains', 'approvedDomains', 'rejectedDomains']);
+        sendResponse({
+          userDomains: userResult.userSubmittedDomains || [],
+          approvedDomains: userResult.approvedDomains || [],
+          rejectedDomains: userResult.rejectedDomains || []
+        });
+        break;
+      }
+
+      case 'approveDomain': {
+        const approveResult = await browser.storage.local.get(['userSubmittedDomains', 'approvedDomains']);
+        const userDomains = approveResult.userSubmittedDomains || [];
+        const approvedDomains = approveResult.approvedDomains || [];
+
+        // Remove from pending
+        userDomains.splice(message.index, 1);
+
+        // Add to approved
+        approvedDomains.push(message.domain);
+        NEWS_CORP_DOMAINS.push(message.domain);
+
+        await browser.storage.local.set({
+          userSubmittedDomains: userDomains,
+          approvedDomains: approvedDomains
+        });
+
+        // Note: updateBlockingRules removed - using programmatic blocking now
+        sendResponse({ success: true });
+        break;
+      }
+
+      case 'rejectDomain': {
+        const rejectResult = await browser.storage.local.get(['userSubmittedDomains', 'rejectedDomains']);
+        const rejectUserDomains = rejectResult.userSubmittedDomains || [];
+        const rejectedDomains = rejectResult.rejectedDomains || [];
+
+        // Remove from pending
+        rejectUserDomains.splice(message.index, 1);
+
+        // Add to rejected
+        rejectedDomains.push(message.domain);
+
+        await browser.storage.local.set({
+          userSubmittedDomains: rejectUserDomains,
+          rejectedDomains: rejectedDomains
+        });
+
+        sendResponse({ success: true });
+        break;
+      }
+
+      case 'getStats': {
+        const statsResult = await browser.storage.local.get(['userSubmittedDomains', 'approvedDomains', 'rejectedDomains']);
+        sendResponse({
+          totalHardcoded: NEWS_CORP_DOMAINS.length,
+          pending: (statsResult.userSubmittedDomains || []).length,
+          approved: (statsResult.approvedDomains || []).length,
+          rejected: (statsResult.rejectedDomains || []).length
+        });
+        break;
+      }
+
+      case 'reloadUserDomains': {
+        await loadUserSubmissions();
+        sendResponse({ success: true });
+        break;
+      }
+
+      case 'updateDomains': {
+        await loadHardcodedDomains();
+        sendResponse({ success: true });
+        break;
+      }
+
+      default: {
+        sendResponse({ error: 'Unknown action' });
+      }
+    }
+  } catch (err) {
+    console.error('❌ Message handling error:', err);
+    sendResponse({ error: err.message });
   }
+
+  return true; // Keep message channel open for async responses
 });

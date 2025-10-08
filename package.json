@@ -6,15 +6,13 @@
   "main": "src/content.js",
   "scripts": {
     "build": "webpack --mode=production",
-    "build:chrome": "webpack --mode=production --env browser=chrome",
-    "build:firefox": "webpack --mode=production --env browser=firefox",
     "dev": "webpack --mode=development --watch",
     "clean": "rimraf dist",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
-    "lint": "eslint src/",
-    "lint:fix": "eslint src/ --fix",
-    "lint:json": "jsonlint package.json manifest.json _locales/en_AU/messages.json",
+    "lint": "eslint src/ options/",
+    "lint:fix": "eslint src/ options/ --fix",
+    "lint:json": "node scripts/validate-json.cjs",
     "lint:yaml": "yamllint crowdin.yml .github/workflows/crowdin.yml",
     "lint:md": "markdownlint README.md",
     "lint:all": "npm run lint && npm run lint:json && npm run lint:yaml && npm run lint:md"
@@ -24,7 +22,7 @@
     "webextension",
     "blocker"
   ],
-  "author": "@matcarpenter",
+  "author": "RussellTaylor",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.25.0",
@@ -35,7 +33,6 @@
     "copy-webpack-plugin": "^13.0.1",
     "eslint": "^9.37.0",
     "globals": "^16.4.0",
-    "jsonlint": "^1.6.3",
     "markdownlint-cli": "^0.45.0",
     "rimraf": "^6.0.1",
     "webpack": "^5.95.0",

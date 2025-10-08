@@ -1,8 +1,6 @@
 // SnoozeCorp Popup Script
 // Handles UI for viewing domains and submitting new ones
 
-/* eslint-disable no-unused-vars */
-
 // Import browser API polyfill for cross-browser compatibility
 import browser from 'webextension-polyfill';
 
@@ -141,7 +139,7 @@ function validateDomain(domain) {
     }
 
     return { valid: true, domain: hostname };
-  } catch (_e) {
+  } catch {
     return { valid: false, error: 'Invalid domain format' };
   }
 }
@@ -169,7 +167,7 @@ async function displayDomains() {
       div.textContent = `${domain} (pending review)`;
       domainList.appendChild(div);
     });
-  } catch (_e) {
+  } catch {
     // Ignore errors
   }
 }
@@ -222,10 +220,33 @@ submitForm.addEventListener('submit', async (e) => {
     // Notify background script to reload
     browser.runtime.sendMessage({ action: 'reloadUserDomains' });
 
-  } catch (_e) {
+  } catch {
     showMessage('Error submitting domain', 'error');
   }
 });
 
+// Function to populate input with current tab's domain
+async function populateCurrentDomain() {
+  try {
+    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+    if (tabs[0] && tabs[0].url) {
+      const url = new URL(tabs[0].url);
+      const hostname = url.hostname;
+      
+      // Only populate if it's not already blocked and input is empty
+      if (domainInput.value === '' && 
+          !NEWS_CORP_DOMAINS.includes(hostname) &&
+          !NEWS_CORP_DOMAINS.some(d => hostname.endsWith('.' + d))) {
+        domainInput.value = hostname;
+      }
+    }
+  } catch (error) {
+    console.error('Error getting current domain:', error);
+  }
+}
+
 // Initialize
-document.addEventListener('DOMContentLoaded', displayDomains);
+document.addEventListener('DOMContentLoaded', async () => {
+  await displayDomains();
+  await populateCurrentDomain();
+});

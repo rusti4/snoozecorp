@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SnoozeCorp Admin Panel</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: white;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    .login-section {
+      max-width: 400px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .login-section input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+    }
+    .login-section button {
+      width: 100%;
+      padding: 12px;
+      background: #ff4444;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .login-section button:hover {
+      background: #cc3333;
+    }
+    .admin-section {
+      display: none;
+    }
+    .section {
+      background: rgba(255, 255, 255, 0.1);
+      margin: 20px 0;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .section h2 {
+      margin-top: 0;
+      color: #ff4444;
+      border-bottom: 2px solid #ff4444;
+      padding-bottom: 10px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 300px;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      resize: vertical;
+    }
+    .domain-list {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 10px 0;
+    }
+    .domain-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      margin: 5px 0;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .domain-item button {
+      margin-left: 10px;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+    .approve-btn {
+      background: #4CAF50;
+      color: white;
+    }
+    .approve-btn:hover {
+      background: #45a049;
+    }
+    .reject-btn {
+      background: #f44336;
+      color: white;
+    }
+    .reject-btn:hover {
+      background: #da190b;
+    }
+    .save-btn {
+      background: #2196F3;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px 0;
+      transition: background 0.3s;
+    }
+    .save-btn:hover {
+      background: #1976D2;
+    }
+    .message {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+    .success {
+      background: rgba(76, 175, 80, 0.2);
+      color: #4CAF50;
+      border: 1px solid #4CAF50;
+    }
+    .error {
+      background: rgba(244, 67, 54, 0.2);
+      color: #f44336;
+      border: 1px solid #f44336;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 15px 0;
+    }
+    .stat-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .stat-number {
+      font-size: 2em;
+      font-weight: bold;
+      color: #ff4444;
+    }
+    .stat-label {
+      font-size: 0.9em;
+      opacity: 0.9;
+    }
+    .extension-status {
+      text-align: center;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      margin: 20px 0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .extension-status.connected {
+      background: rgba(76, 175, 80, 0.2);
+      border-color: #4CAF50;
+    }
+    .extension-status.disconnected {
+      background: rgba(244, 67, 54, 0.2);
+      border-color: #f44336;
+    }
+    .ai-section input {
+      width: calc(100% - 120px);
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      margin-right: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+    }
+    .ai-section button {
+      padding: 10px 15px;
+      background: #ff9800;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .ai-section button:hover {
+      background: #e68900;
+    }
+    .ai-result {
+      margin-top: 10px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+      .domain-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .domain-item button {
+        margin: 5px 5px 0 0;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🛡️ SnoozeCorp Admin Panel</h1>
+
+    <div id="login-section" class="login-section">
+      <h2>🔐 Admin Login</h2>
+      <input type="password" id="password" placeholder="Enter admin password">
+      <button id="login-btn">Login</button>
+      <div id="login-message"></div>
+    </div>
+
+    <div id="admin-section" class="admin-section">
+      <div id="extension-status" class="extension-status">
+        <h3>🔗 Extension Connection</h3>
+        <p id="connection-status">Checking connection...</p>
+      </div>
+
+      <div class="section">
+        <h2>📋 Hardcoded Domain List</h2>
+        <p>Current blocked domains (one per line):</p>
+        <textarea id="hardcoded-domains" placeholder="Enter domains, one per line"></textarea>
+        <button id="save-hardcoded" class="save-btn">Save Changes</button>
+        <div id="hardcoded-message"></div>
+      </div>
+
+      <div class="section">
+        <h2>🤖 AI Domain Validation</h2>
+        <p>Domain to validate:</p>
+        <div class="ai-section">
+          <input type="text" id="ai-domain" placeholder="e.g., example.com">
+          <button id="validate-ai">Validate with AI</button>
+        </div>
+        <div id="ai-result" class="ai-result"></div>
+      </div>
+
+      <div class="section">
+        <h2>👥 User-Submitted Domains</h2>
+        <div id="user-domains" class="domain-list">
+          <!-- User submissions will be populated here -->
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>📊 Statistics</h2>
+        <div id="stats" class="stats-grid">
+          <!-- Stats will be populated here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Default admin password
+    const ADMIN_PASSWORD = 'snoozecorp2024';
+
+    // DOM elements
+    const loginSection = document.getElementById('login-section');
+    const adminSection = document.getElementById('admin-section');
+    const passwordInput = document.getElementById('password');
+    const loginBtn = document.getElementById('login-btn');
+    const loginMessage = document.getElementById('login-message');
+    const extensionStatus = document.getElementById('extension-status');
+    const connectionStatus = document.getElementById('connection-status');
+    const hardcodedDomainsTextarea = document.getElementById('hardcoded-domains');
+    const saveHardcodedBtn = document.getElementById('save-hardcoded');
+    const hardcodedMessage = document.getElementById('hardcoded-message');
+    const aiDomainInput = document.getElementById('ai-domain');
+    const validateAiBtn = document.getElementById('validate-ai');
+    const aiResult = document.getElementById('ai-result');
+    const userDomainsDiv = document.getElementById('user-domains');
+    const statsDiv = document.getElementById('stats');
+
+    // Check if SnoozeCorp extension is installed
+    let extensionConnected = false;
+    let extensionId = null;
+
+    // Try to find the extension
+    function findExtension() {
+      // Common extension IDs to try
+      const possibleIds = [
+        'kbbepnjlcnhjkkinbfkkmndccfkdenoj', // Example - replace with actual
+        // Add more possible IDs here
+      ];
+
+      // Check if chrome.runtime is available
+      if (typeof chrome !== 'undefined' && chrome.runtime) {
+        // Try to connect to extension
+        try {
+          // This will work if the extension is installed
+          chrome.runtime.sendMessage({ action: 'ping' }, (response) => {
+            if (chrome.runtime.lastError) {
+              showDisconnected();
+            } else {
+              extensionConnected = true;
+              extensionId = chrome.runtime.id;
+              showConnected();
+              loadData();
+            }
+          });
+        } catch (e) {
+          showDisconnected();
+        }
+      } else {
+        showDisconnected();
+      }
+    }
+
+    function showConnected() {
+      extensionStatus.className = 'extension-status connected';
+      connectionStatus.textContent = '✅ Connected to SnoozeCorp extension';
+    }
+
+    function showDisconnected() {
+      extensionStatus.className = 'extension-status disconnected';
+      connectionStatus.innerHTML = `
+        ❌ SnoozeCorp extension not detected<br>
+        <small>Make sure the extension is installed and enabled</small>
+      `;
+    }
+
+    // Login functionality
+    loginBtn.addEventListener('click', () => {
+      const password = passwordInput.value;
+      if (password === ADMIN_PASSWORD) {
+        loginSection.style.display = 'none';
+        adminSection.style.display = 'block';
+        findExtension();
+      } else {
+        loginMessage.textContent = '❌ Incorrect password';
+        loginMessage.style.color = 'red';
+      }
+    });
+
+    // Allow Enter key for login
+    passwordInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        loginBtn.click();
+      }
+    });
+
+    // Load all data from extension
+    async function loadData() {
+      if (!extensionConnected) return;
+
+      try {
+        // Load hardcoded domains
+        const hardcodedResponse = await sendMessage({ action: 'getHardcodedDomains' });
+        if (hardcodedResponse && hardcodedResponse.domains) {
+          hardcodedDomainsTextarea.value = hardcodedResponse.domains.join('\n');
+        }
+
+        // Load user submissions
+        await displayUserDomains();
+
+        // Load statistics
+        await displayStats();
+
+      } catch (error) {
+        console.error('Error loading data:', error);
+        showMessage('Error loading data from extension', 'error');
+      }
+    }
+
+    // Send message to extension
+    function sendMessage(message) {
+      return new Promise((resolve, reject) => {
+        if (!extensionConnected) {
+          reject(new Error('Extension not connected'));
+          return;
+        }
+
+        chrome.runtime.sendMessage(extensionId, message, (response) => {
+          if (chrome.runtime.lastError) {
+            reject(new Error(chrome.runtime.lastError.message));
+          } else {
+            resolve(response);
+          }
+        });
+      });
+    }
+
+    // Save hardcoded domains
+    saveHardcodedBtn.addEventListener('click', async () => {
+      if (!extensionConnected) {
+        showMessage('Extension not connected', 'error');
+        return;
+      }
+
+      try {
+        const domains = hardcodedDomainsTextarea.value
+          .split('\n')
+          .map(d => d.trim())
+          .filter(d => d.length > 0);
+
+        await sendMessage({
+          action: 'setHardcodedDomains',
+          domains: domains
+        });
+
+        showMessage('✅ Domains saved successfully!', 'success');
+      } catch (error) {
+        console.error('Error saving domains:', error);
+        showMessage('❌ Error saving domains', 'error');
+      }
+    });
+
+    // AI validation
+    validateAiBtn.addEventListener('click', async () => {
+      const domain = aiDomainInput.value.trim();
+      if (!domain) {
+        aiResult.textContent = '❌ Please enter a domain';
+        return;
+      }
+
+      aiResult.textContent = '🤖 Validating...';
+
+      try {
+        // This would call an AI service - for now, just simulate
+        const response = await mockAivalidation(domain);
+        aiResult.innerHTML = `<strong>Result:</strong> ${response}`;
+      } catch (error) {
+        aiResult.textContent = `❌ Error: ${error.message}`;
+      }
+    });
+
+    // Mock AI validation (replace with real AI service)
+    async function mockAivalidation(domain) {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Simple mock logic
+      const newsKeywords = ['news', 'media', 'press', 'journal', 'times', 'post', 'herald'];
+      const hasNewsKeyword = newsKeywords.some(keyword => domain.toLowerCase().includes(keyword));
+
+      if (hasNewsKeyword) {
+        return `✅ ${domain} appears to be a news/media site and should be blocked.`;
+      } else {
+        return `❓ ${domain} doesn't clearly appear to be a news site. Manual review recommended.`;
+      }
+    }
+
+    // Display user-submitted domains
+    async function displayUserDomains() {
+      if (!extensionConnected) return;
+
+      try {
+        userDomainsDiv.innerHTML = '<p>Loading...</p>';
+
+        const response = await sendMessage({ action: 'getUserDomains' });
+        const userDomains = response.userDomains || [];
+        const approvedDomains = response.approvedDomains || [];
+        const rejectedDomains = response.rejectedDomains || [];
+
+        if (userDomains.length === 0) {
+          userDomainsDiv.innerHTML = '<p>✅ No pending user submissions.</p>';
+          return;
+        }
+
+        userDomainsDiv.innerHTML = '';
+
+        userDomains.forEach((domain, index) => {
+          const div = document.createElement('div');
+          div.className = 'domain-item';
+
+          const domainText = document.createElement('span');
+          domainText.textContent = domain;
+
+          const actions = document.createElement('div');
+
+          const approveBtn = document.createElement('button');
+          approveBtn.textContent = '✓ Approve';
+          approveBtn.className = 'approve-btn';
+          approveBtn.onclick = () => approveDomain(domain, index);
+
+          const rejectBtn = document.createElement('button');
+          rejectBtn.textContent = '✗ Reject';
+          rejectBtn.className = 'reject-btn';
+          rejectBtn.onclick = () => rejectDomain(domain, index);
+
+          actions.appendChild(approveBtn);
+          actions.appendChild(rejectBtn);
+
+          div.appendChild(domainText);
+          div.appendChild(actions);
+          userDomainsDiv.appendChild(div);
+        });
+
+        // Show counts
+        const countsDiv = document.createElement('div');
+        countsDiv.innerHTML = `
+          <p><strong>Approved:</strong> ${approvedDomains.length} domains</p>
+          <p><strong>Rejected:</strong> ${rejectedDomains.length} domains</p>
+        `;
+        userDomainsDiv.appendChild(countsDiv);
+
+      } catch (error) {
+        console.error('Error loading user domains:', error);
+        userDomainsDiv.innerHTML = '<p>❌ Error loading user submissions.</p>';
+      }
+    }
+
+    // Approve domain
+    async function approveDomain(domain, index) {
+      try {
+        await sendMessage({
+          action: 'approveDomain',
+          domain: domain,
+          index: index
+        });
+        await displayUserDomains();
+        showMessage(`✅ Approved: ${domain}`, 'success');
+      } catch (error) {
+        showMessage(`❌ Error approving domain: ${error.message}`, 'error');
+      }
+    }
+
+    // Reject domain
+    async function rejectDomain(domain, index) {
+      try {
+        await sendMessage({
+          action: 'rejectDomain',
+          domain: domain,
+          index: index
+        });
+        await displayUserDomains();
+        showMessage(`❌ Rejected: ${domain}`, 'success');
+      } catch (error) {
+        showMessage(`❌ Error rejecting domain: ${error.message}`, 'error');
+      }
+    }
+
+    // Display statistics
+    async function displayStats() {
+      if (!extensionConnected) return;
+
+      try {
+        const response = await sendMessage({ action: 'getStats' });
+        const totalHardcoded = response.totalHardcoded || 0;
+        const pending = response.pending || 0;
+        const approved = response.approved || 0;
+        const rejected = response.rejected || 0;
+
+        statsDiv.innerHTML = `
+          <div class="stat-card">
+            <div class="stat-number">${totalHardcoded}</div>
+            <div class="stat-label">Total Hardcoded Domains</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">${pending}</div>
+            <div class="stat-label">Pending Submissions</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">${approved}</div>
+            <div class="stat-label">Approved Submissions</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">${rejected}</div>
+            <div class="stat-label">Rejected Submissions</div>
+          </div>
+        `;
+      } catch (error) {
+        console.error('Error loading stats:', error);
+        statsDiv.innerHTML = '<p>❌ Error loading statistics.</p>';
+      }
+    }
+
+    // Show message
+    function showMessage(text, type) {
+      // Clear existing messages
+      document.querySelectorAll('.message').forEach(el => el.remove());
+
+      const message = document.createElement('div');
+      message.className = `message ${type}`;
+      message.textContent = text;
+
+      // Insert after the relevant section
+      const targetSection = adminSection.querySelector('.section');
+      if (targetSection) {
+        targetSection.insertBefore(message, targetSection.children[1]);
+      }
+
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        if (message.parentNode) {
+          message.remove();
+        }
+      }, 5000);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      passwordInput.focus();
+    });
+  </script>
+</body>
+</html>
