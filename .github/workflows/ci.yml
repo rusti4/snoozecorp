@@ -32,15 +32,9 @@ jobs:
         node-version: '18'
         cache: 'npm'
     - run: npm ci
-    - run: npm run build:chrome
-    - run: npm run build:firefox
-    - name: Upload Chrome build
+    - run: npm run build
+    - name: Upload extension build
       uses: actions/upload-artifact@v4
       with:
-        name: chrome-extension
-        path: dist/chrome/
-    - name: Upload Firefox build
-      uses: actions/upload-artifact@v4
-      with:
-        name: firefox-extension
-        path: dist/firefox/
+        name: snoozecorp-extension
+        path: dist/
