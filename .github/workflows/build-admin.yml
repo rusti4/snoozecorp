@@ -1,0 +1,42 @@
+name: Build Admin Panel
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'admin.html'
+      - '.github/workflows/build-admin.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build extension
+        run: npm run build
+
+      - name: Create secure password file
+        run: |
+          # Hash the admin password from secrets
+          PASSWORD_HASH=$(echo -n "${{ secrets.ADMIN_PASSWORD }}" | sha256sum | cut -d' ' -f1)
+          echo "{\"password_hash\": \"$PASSWORD_HASH\"}" > admin-config.json
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          publish_branch: gh-pages
+          cname: snoozecorp-admin.rusti4.github.io

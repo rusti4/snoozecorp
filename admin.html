@@ -4,8 +4,235 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SnoozeCorp Admin Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tilt.js/1.2.1/tilt.jquery.min.js"></script>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+    }
+
+    .limiter {
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .container-login100 {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+      background: linear-gradient(-135deg, #667eea, #764ba2);
+    }
+
+    .wrap-login100 {
+      width: 960px;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      padding: 177px 130px 33px 95px;
+    }
+
+    .login100-pic {
+      width: 316px;
+      margin-right: 50px;
+    }
+
+    .login100-pic img {
+      max-width: 100%;
+    }
+
+    .login100-form {
+      width: 290px;
+    }
+
+    .login100-form-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 24px;
+      color: #333333;
+      line-height: 1.2;
+      text-align: center;
+      width: 100%;
+      display: block;
+      padding-bottom: 54px;
+    }
+
+    .wrap-input100 {
+      position: relative;
+      width: 100%;
+      z-index: 1;
+      margin-bottom: 10px;
+    }
+
+    .input100 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      color: #666666;
+      display: block;
+      width: 100%;
+      background: #e6e6e6;
+      height: 50px;
+      border-radius: 25px;
+      padding: 0 30px 0 68px;
+      border: none;
+      outline: none;
+    }
+
+    .focus-input100 {
+      display: block;
+      position: absolute;
+      border-radius: 25px;
+      bottom: 0;
+      left: 0;
+      z-index: -1;
+      width: 100%;
+      height: 100%;
+      box-shadow: 0px 0px 0px 0px;
+      color: rgba(106, 106, 255, 0.5);
+    }
+
+    .input100:focus + .focus-input100 {
+      -webkit-animation: anim-shadow 0.5s ease-in-out forwards;
+      animation: anim-shadow 0.5s ease-in-out forwards;
+    }
+
+    @-webkit-keyframes anim-shadow {
+      to {
+        box-shadow: 0px 0px 70px 25px;
+        opacity: 0;
+      }
+    }
+
+    @keyframes anim-shadow {
+      to {
+        box-shadow: 0px 0px 70px 25px;
+        opacity: 0;
+      }
+    }
+
+    .symbol-input100 {
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      position: absolute;
+      border-radius: 25px;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding-left: 35px;
+      pointer-events: none;
+      color: #666666;
+      -webkit-transition: all 0.4s;
+      -o-transition: all 0.4s;
+      -moz-transition: all 0.4s;
+      transition: all 0.4s;
+    }
+
+    .input100:focus + .focus-input100 + .symbol-input100 {
+      color: #6a64f1;
+      padding-left: 28px;
+    }
+
+    .container-login100-form-btn {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding-top: 20px;
+    }
+
+    .login100-form-btn {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      color: #fff;
+      text-transform: uppercase;
+      width: 100%;
+      height: 50px;
+      border-radius: 25px;
+      background: linear-gradient(to left, #667eea, #764ba2);
+      border: none;
+      outline: none;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0 25px;
+      -webkit-transition: all 0.4s;
+      -o-transition: all 0.4s;
+      -moz-transition: all 0.4s;
+      transition: all 0.4s;
+    }
+
+    .login100-form-btn:hover {
+      background: linear-gradient(to left, #5a6fd8, #6b4196);
+    }
+
+    .login100-form-btn:active {
+      transform: scale(0.95);
+    }
+
+    .login-message {
+      text-align: center;
+      margin-top: 15px;
+      color: #ff4444;
+      font-size: 14px;
+    }
+
+    @media (max-width: 992px) {
+      .wrap-login100 {
+        padding: 177px 90px 33px 85px;
+      }
+
+      .login100-pic {
+        width: 35%;
+        margin-right: 30px;
+      }
+
+      .login100-form {
+        width: 50%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .wrap-login100 {
+        padding: 100px 80px 33px 80px;
+      }
+
+      .login100-pic {
+        display: none;
+      }
+
+      .login100-form {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .wrap-login100 {
+        padding: 100px 15px 33px 15px;
+      }
+    }
+
+    .admin-section {
+      display: none;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       padding: 20px;
       max-width: 1200px;
@@ -14,7 +241,8 @@
       min-height: 100vh;
       color: white;
     }
-    .container {
+
+    .admin-section .container {
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
       border-radius: 20px;
@@ -22,43 +250,12 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.2);
     }
-    h1 {
+
+    .admin-section h1 {
       text-align: center;
       margin-bottom: 30px;
       color: white;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    }
-    .login-section {
-      max-width: 400px;
-      margin: 0 auto;
-      text-align: center;
-    }
-    .login-section input {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      background: rgba(255, 255, 255, 0.9);
-      color: #333;
-    }
-    .login-section button {
-      width: 100%;
-      padding: 12px;
-      background: #ff4444;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .login-section button:hover {
-      background: #cc3333;
-    }
-    .admin-section {
-      display: none;
     }
     .section {
       background: rgba(255, 255, 255, 0.1);
@@ -269,17 +466,41 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🛡️ SnoozeCorp Admin Panel</h1>
+  <div class="limiter">
+    <div class="container-login100">
+      <div class="wrap-login100">
+        <div class="login100-pic js-tilt" data-tilt>
+          <img src="https://colorlib.com/etc/lf/Login_v1/images/img-01.png" alt="IMG">
+        </div>
 
-    <div id="login-section" class="login-section">
-      <h2>🔐 Admin Login</h2>
-      <input type="password" id="password" placeholder="Enter admin password">
-      <button id="login-btn">Login</button>
-      <div id="login-message"></div>
+        <form class="login100-form validate-form">
+          <span class="login100-form-title">
+            �️ SnoozeCorp Admin Login
+          </span>
+
+          <div class="wrap-input100 validate-input" data-validate="Password is required">
+            <input class="input100" type="password" id="password" name="pass" placeholder="Password">
+            <span class="focus-input100"></span>
+            <span class="symbol-input100">
+              <i class="fa fa-lock" aria-hidden="true"></i>
+            </span>
+          </div>
+
+          <div class="container-login100-form-btn">
+            <button class="login100-form-btn" id="login-btn">
+              Login
+            </button>
+          </div>
+
+          <div id="login-message" class="login-message"></div>
+        </form>
+      </div>
     </div>
+  </div>
 
-    <div id="admin-section" class="admin-section">
+  <div id="admin-section" class="admin-section">
+    <div class="container">
+      <h1>🛡️ SnoozeCorp Admin Panel</h1>
       <div id="extension-status" class="extension-status">
         <h3>🔗 Extension Connection</h3>
         <p id="connection-status">Checking connection...</p>
@@ -329,8 +550,35 @@
   </div>
 
   <script>
-    // Default admin password
-    const ADMIN_PASSWORD = 'snoozecorp2024';
+    // Load admin configuration
+    let ADMIN_PASSWORD_HASH = null;
+
+    async function loadAdminConfig() {
+      try {
+        const response = await fetch('./admin-config.json');
+        if (response.ok) {
+          const config = await response.json();
+          ADMIN_PASSWORD_HASH = config.password_hash;
+        } else {
+          // Fallback to hardcoded password if config not found
+          console.warn('Admin config not found, using fallback password');
+          ADMIN_PASSWORD_HASH = '809a0a1010d7e7a39184200a1b4d36ed734fa67a3b1bd1f72d16c554522b2b06';
+        }
+      } catch (error) {
+        console.error('Error loading admin config:', error);
+        // Fallback to hardcoded password
+        ADMIN_PASSWORD_HASH = 'fallback';
+      }
+    }
+
+    // Hash function for password validation
+    async function hashPassword(password) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(password);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
 
     // DOM elements
     const loginSection = document.getElementById('login-section');
@@ -400,15 +648,18 @@
     }
 
     // Login functionality
-    loginBtn.addEventListener('click', () => {
+    loginBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
       const password = passwordInput.value;
-      if (password === ADMIN_PASSWORD) {
-        loginSection.style.display = 'none';
+      const hashedPassword = await hashPassword(password);
+
+      if (hashedPassword === ADMIN_PASSWORD_HASH) {
+        document.querySelector('.limiter').style.display = 'none';
         adminSection.style.display = 'block';
         findExtension();
       } else {
         loginMessage.textContent = '❌ Incorrect password';
-        loginMessage.style.color = 'red';
+        loginMessage.style.color = '#ff4444';
       }
     });
 
@@ -769,8 +1020,9 @@
     }
 
     // Initialize
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       passwordInput.focus();
+      await loadAdminConfig();
     });
   </script>
 </body>
